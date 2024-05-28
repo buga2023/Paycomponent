@@ -2,42 +2,49 @@ package domain;
 
 import service.Notificacao;
 import service.Pagamento;
-import service.PagamentoParcelado;
+import service.impl.NotificacaoConsole;
+import service.impl.PagamentoBoleto;
+import service.impl.PagamentoCartao;
+import service.impl.PagamentoPIX;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class SistemaPagamento {
-    private List<Double> registrosPagamentos = new ArrayList<>();
-    private Pagamento pagamento;
 
-    public SistemaPagamento(Pagamento pagamento, Notificacao notificacao) {
-        this.pagamento = pagamento;
-    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Notificacao notificacao = new NotificacaoConsole();
+        Pagamento pagamento = null;
 
-    public boolean processarPagamento(double valor) {
-        boolean pagamentoBemSucedido = pagamento.processarPagamento(valor);
-        if (pagamentoBemSucedido) {
-            registrosPagamentos.add(valor);
+        System.out.println("Escolha a forma de pagamento:");
+        System.out.println("1. Boleto");
+        System.out.println("2. Cartão");
+        System.out.println("3. PIX");
+
+        int opcao = scanner.nextInt();
+
+        switch (opcao) {
+            case 1:
+                pagamento = new PagamentoBoleto();
+                break;
+            case 2:
+                System.out.println("Digite o número de parcelas:");
+                int parcelas = scanner.nextInt();
+                pagamento = new PagamentoCartao(parcelas);
+                break;
+            case 3:
+                pagamento = new PagamentoPIX();
+                break;
+            default:
+                System.out.println("Opção inválida!");
+                return;
         }
-        return pagamentoBemSucedido;
-    }
 
-    public boolean processarPagamentoParcelado(double valor, int parcelas) {
-        if (pagamento instanceof PagamentoParcelado) {
-            PagamentoParcelado pagamentoParcelado = (PagamentoParcelado) pagamento;
-            boolean pagamentoBemSucedido = pagamentoParcelado.processarPagamentoParcelado(valor, parcelas);
-            if (pagamentoBemSucedido) {
-                registrosPagamentos.add(valor);
-            }
-            return pagamentoBemSucedido;
-        } else {
-            System.out.println("Este método de pagamento não suporta parcelamento.");
-            return false;
+        System.out.println("Digite o valor do pagamento:");
+        double valor = scanner.nextDouble();
+
+        if (pagamento != null) {
+            pagamento.pagar(valor, notificacao);
         }
-    }
-
-    public List<Double> getRegistrosPagamentos() {
-        return registrosPagamentos;
     }
 }

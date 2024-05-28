@@ -1,5 +1,6 @@
 package service;
 
-public interface PagamentoTaxa extends Pagamento{
+public interface PagamentoTaxa {
+    boolean processarPagamento(double valor);
     double calcularTaxa(double valor);
 }

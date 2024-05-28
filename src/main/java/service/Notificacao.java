@@ -1,5 +1,5 @@
 package service;
 
 public interface Notificacao {
-    void enviarMensagem(String mensagem);
+    void enviarNotificacao(String mensagem);
 }
